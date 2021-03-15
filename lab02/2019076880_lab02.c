@@ -147,7 +147,7 @@ void	PrintList(List L)
 	now = L->next;							// do not print header element
 	while (now != NULL)						// print all elements of the list
 	{
-		fprintf(output, "key: %d    ", now->element);
+		fprintf(output, "key: %d\t", now->element);
 		now = now->next;					// move to the next Node
 	}
 	fprintf(output, "\n");
@@ -181,7 +181,7 @@ Position	Find(ElementType X, List L)
 	now = L;							    // Check from the header Node
 	while (now != NULL && now->element != X)
 		now = now->next;
-	return (now);							// if a list doesn't have any Node with element X, 'Find' return NULL
+	return (now);							// if the list doesn't have any Node with element X, 'Find' return NULL
 }
 
 /* Find Previous Node with element X */
