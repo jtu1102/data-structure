@@ -156,7 +156,7 @@ void printInorder(ThreadedPtr root){
     }
 }
 
-/*후위순회 하면서 노드 삭제 (메모리 해제), 루트노드를 가장 마지막에 삭제해야 하므로 후위 순회!*/
+/*후위순회 하면서 노드 삭제 (메모리 해제), 부모 노드를 자식 노드 다음에 삭제해야 하므로 후위 순회!*/
 void DeleteTree(ThreadedPtr root){
     if (root->data == -1){ // 루트 노드 먼저 삭제
         ThreadedPtr tmp;
