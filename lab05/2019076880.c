@@ -122,6 +122,7 @@ Tree deleteNode(Tree root, int key, int *err_flag){
         root->right = deleteNode(root->right, root->value, err_flag); 
     }
     else{
+        tmp = root; // 삭제할 노드 백업
         if (root->left == NULL) // 오른쪽 자식 노드만 있는 경우
             root = root->right; // 오른쪽 자식 노드를 그대로 올려서 연결
         else // 왼쪽 자식 노드만 있는 경우
