@@ -100,8 +100,8 @@ Tree insertNode(Tree root, int key, int *err_flag){
 /* 매개변수로 받은 키값을 갖는 노드 삭제하기, 트리의 루트 노드 주소값을 반환 */
 Tree deleteNode(Tree root, int key, int *err_flag){
     Tree tmp;
-    if (root == NULL){
-        *err_flag = 1;
+    if (root == NULL){ // 삭제할 노드를 찾지 못한 경우
+        *err_flag = 1; 
         return root;
     }
     else if (key < root->value){ // 삭제할 키값이 현재 노드의 키값보다 작다면
