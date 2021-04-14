@@ -140,13 +140,13 @@ AVLTree Delete(ElementType X, AVLTree T){
     
     /* 노드 삭제가 완료된 이후 rebalancing */
     if (Height(T->left) - Height(T->right) >= 2){ // 왼쪽 서브 트리의 노드 개수가 문제가 되는 경우
-        if (Height(T->left->left) > Height(T->left->right)) // 왼쪽 서브트리의 왼쪽 서브트리 height가 왼쪽 서브트리의 오른쪽 서브 트리 height보다 클때-> LL상태
+        if (Height(T->left->left) >= Height(T->left->right)) // 왼쪽 서브트리의 왼쪽 서브트리 height가 왼쪽 서브트리의 오른쪽 서브 트리 height보다 크거나 같을 때-> LL상태
             T = SingleRotateWithLeft(T); 
         else // 반대의 경우 -> LR상태
             T = DoubleRotateWithLeft(T);
     }
     else if (Height(T->right) - Height(T->left) >= 2){ // 오른쪽 서브 트리의 노드 개수가 문제가 되는 경우
-        if (Height(T->right->right) > Height(T->right->left)) // 오른쪽 서브 트리의 오른쪽 서브 트리 height가 오른쪽 서브 트리의 왼쪽 서브 트리height보다 클 때 -> RR상태
+        if (Height(T->right->right) >= Height(T->right->left)) // 오른쪽 서브 트리의 오른쪽 서브 트리 height가 오른쪽 서브 트리의 왼쪽 서브 트리height보다 크거나 같을 때 -> RR상태
             T = SingleRotateWithRight(T);
         else // 반대의 경우 -> RL상태
             T = DoubleRotateWithRight(T);
