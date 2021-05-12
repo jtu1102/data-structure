@@ -107,7 +107,7 @@ BNodePtr Insert_sub(BNodePtr parent, BNodePtr node, int key, int p_pos){
     }
     if (!node->is_leaf){ // 현재 노드가 leaf가 아니라면
         node->child[pos] = Insert_sub(node, node->child[pos], key, pos); // 찾은 pos의 경로를 따라 트리 아래쪽 탐색
-        if (node->size > node->order) // 현재 노드가 꽉 찬 경우
+        if (node->size > node->order) // 위에서 함수가 종료된 이후 꽉 찬 노드라면 split을 진행하면서 위로 올라감
             node = split_node(parent, node, p_pos); // split해 줌
     }
     else{ // 현재 노드가 leaf라면 insert할 위치를 찾은 것
@@ -127,7 +127,7 @@ BNodePtr Insert_sub(BNodePtr parent, BNodePtr node, int key, int p_pos){
 }
 
 BNodePtr split_node(BNodePtr parent, BNodePtr node, int pos){
-    int mid = (node->order - 1) / 2;
+    int mid = (node->order - 1) / 2; // order가 짝수라면 왼쪽 자식 노드 개수를 더 작게 해서 split
     int i;
     BNodePtr right_child;
     BNodePtr new_root;
@@ -153,7 +153,7 @@ BNodePtr split_node(BNodePtr parent, BNodePtr node, int pos){
         new_root->child[0] = node;
         new_root->child[1] = right_child;
         new_root->size++; // 키를 하나 넣었으므로 size증가시키기
-        return new_root;
+        return new_root; // 현재 노드가 아니라 루트를 리턴하는 이유는 새로운 루트는 지나온 경로가 아니기 때문, 루트를 반환해주어야 그 값이 새로운 루트로 정상 업데이트됨
     }
     else{ // 루트 노드가 아닌 경우, 기존에 있는 parent node를 활용
         for (i = parent->size - 1; i > pos; --i){
@@ -164,7 +164,7 @@ BNodePtr split_node(BNodePtr parent, BNodePtr node, int pos){
         parent->size++; // 부모 노드에 키가 하나 추가되었으므로 1 증가
         parent->child[pos + 1] = right_child; // 오른쪽 노드 새로 연결 (왼쪽 노드는 기존 노드, size만 변경해서 split완료)
     }
-    return node;
+    return node; // 현재 노드를 리턴해서 위
 }
 
 /* 노드 하나를 동적할당하는 함수, size, is_leaf는 노드마다 다르므로 초기화하지 않고 공통되는 부분만 초기화 */
@@ -178,7 +178,7 @@ BNodePtr Createnode(int order){
     new->child = (BNodePtr *)malloc(sizeof(BNodePtr) * (order + 1)); // 최대 자식 개수는 order인데, full인 경우 일단 노드를 만들어준 후 split하므로 1 더해서 동적 할당
     for (i = 0; i < order; ++i)
         new->child[i] = NULL;
-    new->size = 1; // 아직 아무 데이터도 없고 child도 없음, child 포인터를 담으면서 +1 해주기 때문에 1로 초기화
+    new->size = 1; // 아직 아무 데이터도 없고 child도 없음, key를 하나씩 담으면서 +1 해주기 때문에 1로 초기화
     return new;
 }
 
