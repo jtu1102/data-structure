@@ -186,6 +186,8 @@ BNodePtr Createnode(int order){
 int Find(BNodePtr root, int key){
     int i;
 
+    if (root->size == 1) // 트리가 비어 있는 경우
+        return 0; // 바로 0 리턴
     for (i = 0; i < root->size; ++i){ // 현재 노드의 키 개수만큼 탐색하면서 내려갈 위치 찾기
         if (i == root->size - 1 || key < root->key[i]) 
         // 내려갈 위치를 찾았거나, i == root->size - 1 인 경우 break. 
