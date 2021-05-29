@@ -2,9 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define Del -1
-#define FULL -2
-#define DUP -3
+#define Del -1 // hash function으로 mod 연산을 활용하므로 -1의 값은 key값이 될 수 없음
 
 FILE *fin;
 FILE *fout;
@@ -20,9 +18,6 @@ typedef struct HashTbl{
 
 HashTable createTable(int TableSize);
 void Insert(HashTable H, ElementType key, int solution);
-int Lin(HashTable H, int i, ElementType key);
-int Quad(HashTable H, int i, ElementType key);
-
 void Delete(HashTable H, ElementType key, int solution);
 int Find(HashTable H, ElementType key, int solution);
 void printTable(HashTable H);
@@ -109,10 +104,9 @@ void Insert(HashTable H, ElementType key, int solution){
     /* Linear probing */
     if (solution == 1) {
         i = key % H->TableSize; // 시작 인덱스
-        for (k = 0; !(!H->TheLists[i] || H->TheLists[i] == Del); ++k) { // 0 또는 Del 상태인 경우 값을 넣을 수 있음
+        for (k = 0; !(H->TheLists[i] == 0 || H->TheLists[i] == Del); ++k) { // 0 또는 Del 상태인 경우 값을 넣을 수 있음
             i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 빈자리 찾기
             if (k != 0 && i == key % H->TableSize) { // 다시 시작점으로 돌아온 경우 : hash table이 가득 참
-
                 fprintf(fout, "Insertion Error: table is full\n");
                 return;
             }
@@ -125,7 +119,7 @@ void Insert(HashTable H, ElementType key, int solution){
     /* Quadratic probing */
     else {
         i = key % H->TableSize; // 시작 인덱스
-        for (k = 0; !(!H->TheLists[i] || H->TheLists[i] == Del); ++k) { // 0 또는 Del 상태인 경우 값을 넣을 수 있음
+        for (k = 0; !(H->TheLists[i] == 0 || H->TheLists[i] == Del); ++k) { // 0 또는 Del 상태인 경우 값을 넣을 수 있음
             i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 빈자리 찾기
             if (k != 0 && i == key % H->TableSize) { // 다시 시작점으로 돌아온 경우 : hash table이 가득 참
                 fprintf(fout, "Insertion Error: table is full\n");
@@ -141,14 +135,17 @@ void Insert(HashTable H, ElementType key, int solution){
     fprintf(fout, "Insert %d into address %d\n", key, i);
 }
 
+/* Delete the value from the hash table */
 void Delete(HashTable H, ElementType key, int solution) {
     int i, k;
 
     /* Linear probing */
     if (solution == 1) {
         i = key % H->TableSize; // 시작 인덱스
-        for (k = 0; H->TheLists[i] || (k != 0 && i == key % H->TableSize); ++k) { // key값을 못 찾고 0을 만났거나 다시 원래 자리로 돌아온 경우, key값이 hash table에 없는 경우이므로 탐색 종료
-            i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 빈자리 찾기
+        for (k = 0; H->TheLists[i]; ++k) {
+            i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 같은 값 찾기
+            if (k != 0 && i == key % H->TableSize)
+                break;
             if (H->TheLists[i] == key) { // 삭제할 값을 찾은 경우
                 H->TheLists[i] = Del; // 삭제 되었음을 표시하는 값으로 바꾼다
                 fprintf(fout, "Delete %d\n", key);
@@ -159,8 +156,10 @@ void Delete(HashTable H, ElementType key, int solution) {
     /* Quadratic probing */
     else {
         i = key % H->TableSize; // 시작 인덱스
-        for (k = 0; H->TheLists[i] || (k != 0 && i == key % H->TableSize); ++k) { // key값을 못 찾고 0을 만났거나 다시 원래 자리로 돌아온 경우, key값이 hash table에 없는 경우이므로 탐색 종료
-            i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 빈자리 찾기
+        for (k = 0; H->TheLists[i]; ++k) {
+            i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 같은 값 찾기
+            if (k != 0 && i == key % H->TableSize)
+                break;
             if (H->TheLists[i] == key) { // 삭제할 값을 찾은 경우
                 H->TheLists[i] = Del; // 삭제 되었음을 표시하는 값으로 바꾼다
                 fprintf(fout, "Delete %d\n", key);
@@ -179,8 +178,10 @@ int Find(HashTable H, ElementType key, int solution) {
     /* Linear probing */
     if (solution == 1) {
         i = key % H->TableSize; // 시작 인덱스
-        for (k = 0; H->TheLists[i] || (k != 0 && i == key % H->TableSize); ++k) { // key값을 못 찾고 0을 만났거나 다시 원래 자리로 돌아온 경우, key값이 hash table에 없는 경우이므로 탐색 종료
+        for (k = 0; H->TheLists[i]; ++k) { // key값을 못 찾고 0을 만난 경우, key값이 hash table에 없는 것이므로 탐색 종료
             i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 빈자리 찾기
+            if (k != 0 && i == key % H->TableSize) // 원래 인덱스로 돌아온 경우 key값이 hash table에 없는 것이므로 탐색 종료
+                break;
             if (H->TheLists[i] == key) { // 값을 찾은 경우
                 return 1;
             }
@@ -189,8 +190,10 @@ int Find(HashTable H, ElementType key, int solution) {
     /* Quadratic probing */
     else {
         i = key % H->TableSize; // 시작 인덱스
-        for (k = 0; H->TheLists[i] || (k != 0 && i == key % H->TableSize); ++k) { // key값을 못 찾고 0을 만났거나 다시 원래 자리로 돌아온 경우, key값이 hash table에 없는 경우이므로 탐색 종료
+        for (k = 0; H->TheLists[i]; ++k) { // key값을 못 찾고 0을 만난 경우, key값이 hash table에 없는 것이므로 탐색 종료
             i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 빈자리 찾기
+            if (k != 0 && i == key % H->TableSize) // 원래 인덱스로 돌아온 경우 key값이 hash table에 없는 것이므로 탐색 종료
+                break;
             if (H->TheLists[i] == key) { // 값을 찾은 경우
                 return 1;
             }
