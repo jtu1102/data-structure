@@ -106,7 +106,7 @@ void Insert(HashTable H, ElementType key, int solution){
         i = key % H->TableSize; // 시작 인덱스
         for (k = 0; !(H->TheLists[i] == 0 || H->TheLists[i] == Del); ++k) { // 0 또는 Del 상태인 경우 값을 넣을 수 있음
             i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 빈자리 찾기
-            if (k != 0 && i == key % H->TableSize) { // 다시 시작점으로 돌아온 경우 : hash table이 가득 참
+            if (k > H->TableSize) { // loop 횟수가 table size를 넘은 경우 : hash table이 가득 참
                 fprintf(fout, "Insertion Error: table is full\n");
                 return;
             }
@@ -121,7 +121,7 @@ void Insert(HashTable H, ElementType key, int solution){
         i = key % H->TableSize; // 시작 인덱스
         for (k = 0; !(H->TheLists[i] == 0 || H->TheLists[i] == Del); ++k) { // 0 또는 Del 상태인 경우 값을 넣을 수 있음
             i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 빈자리 찾기
-            if (k != 0 && i == key % H->TableSize) { // 다시 시작점으로 돌아온 경우 : hash table이 가득 참
+            if (k > H->TableSize) { // loop 횟수가 table size를 넘은 경우 : hash table이 가득 참
                 fprintf(fout, "Insertion Error: table is full\n");
                 return;
             }
@@ -144,7 +144,7 @@ void Delete(HashTable H, ElementType key, int solution) {
         i = key % H->TableSize; // 시작 인덱스
         for (k = 0; H->TheLists[i]; ++k) {
             i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 같은 값 찾기
-            if (k != 0 && i == key % H->TableSize)
+            if (k > H->TableSize)
                 break;
             if (H->TheLists[i] == key) { // 삭제할 값을 찾은 경우
                 H->TheLists[i] = Del; // 삭제 되었음을 표시하는 값으로 바꾼다
@@ -158,7 +158,7 @@ void Delete(HashTable H, ElementType key, int solution) {
         i = key % H->TableSize; // 시작 인덱스
         for (k = 0; H->TheLists[i]; ++k) {
             i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 같은 값 찾기
-            if (k != 0 && i == key % H->TableSize)
+            if (k > H->TableSize)
                 break;
             if (H->TheLists[i] == key) { // 삭제할 값을 찾은 경우
                 H->TheLists[i] = Del; // 삭제 되었음을 표시하는 값으로 바꾼다
@@ -180,7 +180,7 @@ int Find(HashTable H, ElementType key, int solution) {
         i = key % H->TableSize; // 시작 인덱스
         for (k = 0; H->TheLists[i]; ++k) { // key값을 못 찾고 0을 만난 경우, key값이 hash table에 없는 것이므로 탐색 종료
             i = ((key % H->TableSize) + k) % H->TableSize; // 한 칸씩 다음 칸을 보면서 빈자리 찾기
-            if (k != 0 && i == key % H->TableSize) // 원래 인덱스로 돌아온 경우 key값이 hash table에 없는 것이므로 탐색 종료
+            if (k > H->TableSize) // 원래 인덱스로 돌아온 경우 key값이 hash table에 없는 것이므로 탐색 종료
                 break;
             if (H->TheLists[i] == key) { // 값을 찾은 경우
                 return 1;
@@ -192,7 +192,7 @@ int Find(HashTable H, ElementType key, int solution) {
         i = key % H->TableSize; // 시작 인덱스
         for (k = 0; H->TheLists[i]; ++k) { // key값을 못 찾고 0을 만난 경우, key값이 hash table에 없는 것이므로 탐색 종료
             i = ((key % H->TableSize) + (k * k)) % H->TableSize; // k^2 칸씩 다음 칸을 보면서 빈자리 찾기
-            if (k != 0 && i == key % H->TableSize) // 원래 인덱스로 돌아온 경우 key값이 hash table에 없는 것이므로 탐색 종료
+            if (k > H->TableSize) // 원래 인덱스로 돌아온 경우 key값이 hash table에 없는 것이므로 탐색 종료
                 break;
             if (H->TheLists[i] == key) { // 값을 찾은 경우
                 return 1;
